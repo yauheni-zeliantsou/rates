@@ -31,7 +31,7 @@ if (form) {
                 }
 
                 localStorage.setItem(ACCESS_TOKEN_KEY, data.access_token);
-                window.location.href = 'rates.html';
+                window.location.href = '/html/rates.html';
             })
             .catch(() => {
                 errorMessage.textContent = 'Invalid username or password.';

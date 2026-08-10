@@ -1,6 +1,10 @@
 @use 'reset';
 @use 'base';
 @use 'components/header';
-@use 'components/footer';
-@use 'components/login-card';
 @use 'components/forms';
+@use 'components/table';
+@use 'components/login-card';
+@use 'components/rates-panel';
+@use 'components/footer';
+@use 'components/currency-select';
+@use 'components/results';
