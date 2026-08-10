@@ -1,0 +1,24 @@
+.login-card {
+  width: 100%;
+  max-width: var(--card-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+@media (max-width: 640px) {
+  .login-card {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
+
+.login-card__title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+}
+
+.login-card__subtitle {
+  font-size: var(--fs-base);
+  color: var(--color-text-muted);
+}
