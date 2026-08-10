@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Auth;
+namespace Tests\Auth\Service;
 
 use App\Auth\Interface\TokenRepositoryInterface;
 use App\Auth\Service\TokenService;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Auth\Repository;
 
-use App\Auth\UserRepository;
+use App\Auth\Repository\UserRepository;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\TestCase;

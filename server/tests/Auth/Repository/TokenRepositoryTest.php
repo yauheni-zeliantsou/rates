@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Auth;
+namespace Tests\Auth\Repository;
 
 use App\Auth\Repository\TokenRepository;
 use DateTimeImmutable;

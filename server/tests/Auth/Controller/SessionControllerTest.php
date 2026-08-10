@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Tests\Auth;
+namespace Tests\Auth\Controller;
 
+use App\Auth\Controller\SessionController;
 use App\Auth\Interface\TokenRepositoryInterface;
 use App\Auth\Service\TokenService;
-use App\Auth\SessionController;
 use App\Http\Request;
 use PHPUnit\Framework\TestCase;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Auth;
+namespace App\Auth\Controller;
 
 use App\Auth\Interface\UserRepositoryInterface;
 use App\Auth\Service\TokenService;

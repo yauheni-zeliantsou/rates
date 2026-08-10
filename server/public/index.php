@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use App\Auth\Controller\SessionController;
+use App\Auth\Controller\TokenController;
 use App\Auth\Repository\TokenRepository;
+use App\Auth\Repository\UserRepository;
 use App\Auth\Service\TokenService;
-use App\Auth\SessionController;
-use App\Auth\TokenController;
-use App\Auth\UserRepository;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Request;
 use App\Http\Router;
