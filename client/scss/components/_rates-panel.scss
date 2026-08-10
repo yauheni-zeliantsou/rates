@@ -1,0 +1,24 @@
+.rates-panel {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+@media (max-width: 640px) {
+  .rates-panel {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
+
+.rates-panel__title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+}
+
+.rates-panel__subtitle {
+  font-size: var(--fs-base);
+  color: var(--color-text-muted);
+}
