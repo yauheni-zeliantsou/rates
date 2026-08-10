@@ -10,7 +10,7 @@ async function apiGet(path) {
 
     if (response.status === 401) {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
-        window.location.href = 'index.html';
+        window.location.href = '/index.html';
         throw new Error('Session expired, please sign in again.');
     }
 
