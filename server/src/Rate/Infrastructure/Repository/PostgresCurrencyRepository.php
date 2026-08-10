@@ -23,6 +23,18 @@ final readonly class PostgresCurrencyRepository implements CurrencyRepositoryInt
         return $this->mapRowsToCurrencies($rows);
     }
 
+    public function save(CurrencyCollection $currencies): void
+    {
+        $statement = $this->pdo->prepare(
+            'INSERT INTO currencies (code, name) VALUES (:code, :name)
+             ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name'
+        );
+
+        foreach ($currencies as $currency) {
+            $statement->execute(['code' => $currency->code, 'name' => $currency->name]);
+        }
+    }
+
     private function mapRowsToCurrencies(array $rows): CurrencyCollection
     {
         $currencies = [];

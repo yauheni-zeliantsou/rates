@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Rate\Infrastructure\Repository;
 
+use App\Rate\Domain\Entity\Currency;
+use App\Rate\Domain\Entity\CurrencyCollection;
 use App\Rate\Infrastructure\Repository\PostgresCurrencyRepository;
 use PDO;
 use PDOStatement;
@@ -65,5 +67,50 @@ final class PostgresCurrencyRepositoryTest extends TestCase
         $currencies = $repository->getAll();
 
         $this->assertCount(0, $currencies);
+    }
+
+    public function testSaveUpsertsEachCurrencyInCollection(): void
+    {
+        $currencies = new CurrencyCollection(
+            new Currency(code: 'USD', name: 'Доллар США'),
+            new Currency(code: 'EUR', name: 'Евро'),
+        );
+
+        $executedParams = [];
+
+        $statement = $this->createMock(PDOStatement::class);
+        $statement->expects($this->exactly(2))
+            ->method('execute')
+            ->willReturnCallback(function (array $params) use (&$executedParams): bool {
+                $executedParams[] = $params;
+
+                return true;
+            });
+
+        $pdo = $this->createMock(PDO::class);
+        $pdo->expects($this->once())
+            ->method('prepare')
+            ->with($this->stringContains('ON CONFLICT (code) DO UPDATE'))
+            ->willReturn($statement);
+
+        $repository = new PostgresCurrencyRepository($pdo);
+        $repository->save($currencies);
+
+        $this->assertSame([
+            ['code' => 'USD', 'name' => 'Доллар США'],
+            ['code' => 'EUR', 'name' => 'Евро'],
+        ], $executedParams);
+    }
+
+    public function testSaveDoesNothingForEmptyCollection(): void
+    {
+        $statement = $this->createMock(PDOStatement::class);
+        $statement->expects($this->never())->method('execute');
+
+        $pdo = $this->createMock(PDO::class);
+        $pdo->expects($this->once())->method('prepare')->willReturn($statement);
+
+        $repository = new PostgresCurrencyRepository($pdo);
+        $repository->save(new CurrencyCollection());
     }
 }

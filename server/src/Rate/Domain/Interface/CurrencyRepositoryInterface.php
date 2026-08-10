@@ -9,4 +9,6 @@ use App\Rate\Domain\Entity\CurrencyCollection;
 interface CurrencyRepositoryInterface
 {
     public function getAll(): CurrencyCollection;
+
+    public function save(CurrencyCollection $currencies): void;
 }

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use App\Rate\Domain\Entity\CurrencyCollection;
 use App\Rate\Infrastructure\CentralBankOfRussia\CbrXmlParser;
-use App\Rate\Infrastructure\Repository\RedisRateRepository;
-use App\Support\Cache\RedisConnection;
+use App\Rate\Infrastructure\Repository\PostgresCurrencyRepository;
+use App\Support\Database\PostgresConnection;
 
 $fallbackXmlPath = __DIR__ . '/../resources/fallback-daily.xml';
 
@@ -20,7 +21,12 @@ $today = new DateTimeImmutable('today');
 
 $rates = (new CbrXmlParser())->parse($xml, $today);
 
-$redis = (new RedisConnection())->redis();
-(new RedisRateRepository($redis))->save($rates);
+$currencies = [];
+foreach ($rates as $rate) {
+    $currencies[$rate->currency->code] = $rate->currency;
+}
 
-fwrite(STDOUT, sprintf('Seeded %d fallback rates for %s%s', count($rates), $today->format('Y-m-d'), PHP_EOL));
+$pdo = (new PostgresConnection())->pdo();
+(new PostgresCurrencyRepository($pdo))->save(new CurrencyCollection(...array_values($currencies)));
+
+fwrite(STDOUT, sprintf('Seeded %d currencies%s', count($currencies), PHP_EOL));
