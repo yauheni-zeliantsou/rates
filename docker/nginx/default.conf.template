@@ -1,0 +1,72 @@
+server {
+    listen 443 ssl;
+    server_name _;
+
+    ssl_certificate     /etc/nginx/ssl/selfsigned.crt;
+    ssl_certificate_key /etc/nginx/ssl/selfsigned.key;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+
+    root /var/www/client;
+
+    # index.html lives in client/html/, everything else (css/js/img) stays at
+    # the client root, so it's served explicitly here instead of via `index`.
+    # The login page and static assets (css/js/img) are accessible without authorization,
+    # so that there is something to render the login form with in the first place.
+    location = / {
+        try_files /html/index.html =404;
+    }
+
+    location = /index.html {
+        try_files /html/index.html =404;
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Any other HTML page (rates.html etc.) is served only to authorized
+    # users — nginx asks the backend via auth_request before serving the file.
+    location ~* ^/(?!index\.html$).+\.html$ {
+        auth_request /auth/verify;
+        error_page 401 = @unauthorized;
+        try_files $uri =404;
+    }
+
+    location @unauthorized {
+        # $http_host (not $host) — to preserve the port the request actually
+        # came in on (nginx builds $host into the Location without the port).
+        return 302 https://$http_host/index.html;
+    }
+
+    location /api/ {
+        fastcgi_pass app:9000;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/server/public/index.php;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_param REQUEST_URI $request_uri;
+    }
+
+    location /oauth/ {
+        fastcgi_pass app:9000;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/server/public/index.php;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_param REQUEST_URI $request_uri;
+    }
+
+    # Internal endpoint for auth_request: checks the session cookie and must not
+    # be accessible directly from the outside.
+    location = /auth/verify {
+        internal;
+        fastcgi_pass app:9000;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/server/public/index.php;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_param REQUEST_URI /auth/verify;
+        fastcgi_pass_request_body off;
+        fastcgi_param CONTENT_LENGTH "";
+    }
+}

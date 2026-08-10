@@ -1,0 +1,23 @@
+{
+  "name": "rates-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "css:build": "sass scss/main.scss css/main.css --style=compressed",
+    "css:watch": "sass --watch scss/main.scss:css/main.css",
+    "lint": "eslint js",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "check": "bin/check.sh"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.5",
+    "globals": "^15.15.0",
+    "prettier": "^3.9.6",
+    "sass": "^1.77.0"
+  },
+  "overrides": {
+    "chokidar": "^3.6.0"
+  }
+}

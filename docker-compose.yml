@@ -1,0 +1,94 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    container_name: miractal_rates_nginx
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8888}:443"
+    environment:
+      - APP_HTTPS_PORT=${APP_HTTPS_PORT:-8443}
+    volumes:
+      - ./client:/var/www/client:ro
+      - ./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - miractal_nginx_ssl:/etc/nginx/ssl
+    depends_on:
+      - app
+    logging: *default-logging
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: miractal_rates_php
+    restart: unless-stopped
+    volumes:
+      - ./server:/var/www/server
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging: *default-logging
+
+  cron:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: miractal_rates_cron
+    restart: unless-stopped
+    command: crond -f -l 8
+    volumes:
+      - ./server:/var/www/server
+      - ./docker/cron/crontab:/etc/crontabs/root:ro
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging: *default-logging
+
+  db:
+    image: postgres:16-alpine
+    container_name: miractal_rates_db
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - miractal_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging: *default-logging
+
+  redis:
+    image: redis:7-alpine
+    container_name: miractal_rates_redis
+    restart: unless-stopped
+    volumes:
+      - miractal_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    logging: *default-logging
+
+volumes:
+  miractal_postgres_data:
+  miractal_redis_data:
+  miractal_nginx_ssl:
