@@ -5,4 +5,3 @@ server/vendor/
 server/.phpunit.result.cache
 server/var/
 server/.php-cs-fixer.cache
-questions.txt
