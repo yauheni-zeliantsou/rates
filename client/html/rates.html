@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exchange Rates</title>
+    <link rel="icon" type="image/png" href="../img/logo-emblem.png" />
+    <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+<header>
+    <div class="header__brand">
+        <img class="header__logo" src="../img/logo-emblem.png" alt="" />
+        Exchange Rates · Central Bank of Russia
+    </div>
+    <div class="header__meta">
+        <div class="header__badge">GET · Rates</div>
+    </div>
+</header>
+<main class="page-center">
+    <div class="rates-panel">
+        <h1 class="rates-panel__title">Currency rates</h1>
+        <p class="rates-panel__subtitle">
+            Export of official Bank of Russia rates. Pick an anchor date (defaults to today) and how
+            many confirmed trading days back from it to include — up to 10.
+        </p>
+
+        <form class="rates-filter">
+            <div class="rates-filter__row">
+                <div class="rates-filter__field">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date" />
+                </div>
+                <div class="rates-filter__field">
+                    <label for="days">Days back</label>
+                    <select id="days" name="days">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10" selected>10</option>
+                    </select>
+                </div>
+                <div class="rates-filter__field">
+                    <label id="currency-label">Currency code</label>
+                    <div class="currency-select">
+                        <button
+                                type="button"
+                                class="currency-select__trigger"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                aria-labelledby="currency-label"
+                        >
+                            All currencies
+                        </button>
+                        <div class="currency-select__panel" hidden></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rates-filter__footer">
+                <button class="rates-filter__submit" type="submit">Get rates</button>
+            </div>
+        </form>
+
+        <div class="results"></div>
+    </div>
+</main>
+<footer>
+    <p class="footer__copyright">© 2026 Exchange Rates</p>
+</footer>
+<script type="module" src="../js/rates.js"></script>
+</body>
+</html>

@@ -4,8 +4,53 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Exchange Rates</title>
-    <link rel="icon" type="image/png" href="img/logo-emblem.png" />
+    <link rel="icon" type="image/png" href="../img/logo-emblem.png" />
+    <link rel="stylesheet" href="../css/main.css" />
 </head>
 <body>
+<header>
+    <div class="header__brand">
+        <img class="header__logo" src="../img/logo-emblem.png" alt="" />
+        Exchange Rates · Central Bank of Russia
+    </div>
+    <div class="header__meta">
+        <div class="header__badge">OAuth2 · password grant</div>
+    </div>
+</header>
+<main class="page-center">
+    <div class="login-card">
+        <h1 class="login-card__title">Sign in</h1>
+        <p class="login-card__subtitle">Authenticate to access the currency rates API console.</p>
+
+        <form class="login-form">
+            <div class="login-form__field">
+                <label for="username">Username</label>
+                <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        autocomplete="username"
+                        placeholder="Username"
+                />
+            </div>
+            <div class="login-form__field">
+                <label for="password">Password</label>
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        autocomplete="current-password"
+                        placeholder="••••••••"
+                />
+            </div>
+            <button class="login-form__submit" type="submit">Sign in</button>
+            <p class="login-form__error" style="display: none; color: #c0392b"></p>
+        </form>
+    </div>
+</main>
+<footer>
+    <p class="footer__copyright">© 2026 Exchange Rates</p>
+</footer>
+<script type="module" src="../js/login.js"></script>
 </body>
 </html>

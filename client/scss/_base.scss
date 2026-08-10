@@ -1,0 +1,79 @@
+:root {
+  // -- surfaces ---------------------------------------------------------
+  --color-bg: oklch(0.985 0.002 90); // page background
+  --color-surface: oklch(1 0 0); // input background
+  --color-surface-muted: oklch(0.97 0.003 90); // request preview block background
+
+  // -- text ---------------------------------------------------------
+  --color-text: oklch(0.2 0.005 90); // primary text: brand, heading, input values
+  --color-text-secondary: oklch(0.35 0.01 90); // text inside the code-preview block
+  --color-text-muted: oklch(0.5 0.01 90); // subtitle under "Sign in"
+  --color-text-subtle: oklch(0.6 0.01 90); // footer, the quietest text
+  --color-label: oklch(0.4 0.01 90); // form field labels (Username/Password)
+
+  // -- surfaces: dark (button, logo icon) --------------------------
+  --color-dark: oklch(0.25 0.01 90);
+  --color-on-dark: oklch(0.98 0.002 90); // text over --color-dark
+
+  // -- borders --------------------------------------------------------
+  --color-border: oklch(0.88 0.005 90); // input border
+  --color-divider: oklch(0.9 0.005 90); // divider line with centered text
+
+  // -- accent -----------------------------------------------------------
+  --color-danger: oklch(0.6 0.16 25); // required field asterisk
+
+  // -- typography ---------------------------------------------------
+  --font-sans: -apple-system, Inter, system-ui;
+  --font-mono: 'SF Mono', Menlo, monospace;
+
+  --fs-xs: 11.5px; // footer, code-preview lines
+  --fs-sm: 12px; // field labels, meta text on the right in the header
+  --fs-base: 13px; // subtitle
+  --fs-md: 14px; // brand, input text, button
+  --fs-lg: 20px; // "Sign in" heading
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  // -- spacing --------------------------------------------------------
+  --space-xs: 6px; // between label and input
+  --space-sm: 12px; // input horizontal padding
+  --space-md: 16px; // code-preview block horizontal padding
+  --space-lg: 24px; // between form field groups
+
+  // -- radius -----------------------------------------------------------
+  --radius-sm: 8px; // inputs, button
+  --radius-md: 10px; // code-preview block
+  --radius-lg: 12px; // rates-filter panel
+
+  // -- layout -----------------------------------------------------------
+  --card-width: 380px;
+}
+
+html {
+  background: var(--color-surface-muted);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans), sans-serif;
+  font-size: var(--fs-md);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+}
+
+.page-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  padding-top: var(--space-lg);
+}
