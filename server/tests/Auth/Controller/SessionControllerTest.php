@@ -6,6 +6,7 @@ namespace Tests\Auth\Controller;
 
 use App\Auth\Controller\SessionController;
 use App\Auth\Interface\TokenRepositoryInterface;
+use App\Auth\Interface\UserRepositoryInterface;
 use App\Auth\Service\TokenService;
 use App\Http\Request;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +21,7 @@ final class SessionControllerTest extends TestCase
             ->with(hash('sha256', 'valid-token'))
             ->willReturn(42);
 
-        $controller = new SessionController(new TokenService($tokenRepository));
+        $controller = new SessionController($this->createTokenService($tokenRepository));
         $request = new Request('GET', '/auth/verify', [], [], [], [TokenService::SESSION_COOKIE_NAME => 'valid-token']);
 
         $response = $controller->verify($request);
@@ -33,7 +34,7 @@ final class SessionControllerTest extends TestCase
         $tokenRepository = $this->createMock(TokenRepositoryInterface::class);
         $tokenRepository->expects($this->never())->method('findActiveUserIdByTokenHash');
 
-        $controller = new SessionController(new TokenService($tokenRepository));
+        $controller = new SessionController($this->createTokenService($tokenRepository));
         $request = new Request('GET', '/auth/verify', []);
 
         $response = $controller->verify($request);
@@ -47,11 +48,16 @@ final class SessionControllerTest extends TestCase
         $tokenRepository = $this->createMock(TokenRepositoryInterface::class);
         $tokenRepository->expects($this->once())->method('findActiveUserIdByTokenHash')->willReturn(null);
 
-        $controller = new SessionController(new TokenService($tokenRepository));
+        $controller = new SessionController($this->createTokenService($tokenRepository));
         $request = new Request('GET', '/auth/verify', [], [], [], [TokenService::SESSION_COOKIE_NAME => 'garbage']);
 
         $response = $controller->verify($request);
 
         $this->assertSame(401, $response->status());
+    }
+
+    private function createTokenService(TokenRepositoryInterface $tokenRepository): TokenService
+    {
+        return new TokenService($tokenRepository, $this->createStub(UserRepositoryInterface::class), 'web-frontend');
     }
 }

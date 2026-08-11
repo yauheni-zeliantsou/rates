@@ -35,12 +35,14 @@ try {
 
     $rateRepository = new RedisRateRepository($redis);
     $currencyRepository = new PostgresCurrencyRepository($pdo);
+    $tokenRepository = new TokenRepository($pdo);
+    $userRepository = new UserRepository($pdo);
+
+    $tokenService = new TokenService($tokenRepository, $userRepository, getenv('OAUTH_CLIENT_ID'));
 
     $ratesController = new RateController(new RateService($source, $rateRepository), $currencyRepository);
     $currenciesController = new CurrencyController($currencyRepository);
-
-    $tokenService = new TokenService(new TokenRepository($pdo));
-    $tokenController = new TokenController(new UserRepository($pdo), $tokenService, getenv('OAUTH_CLIENT_ID'));
+    $tokenController = new TokenController($tokenService);
     $sessionController = new SessionController($tokenService);
     $authMiddleware = new AuthMiddleware($tokenService);
 

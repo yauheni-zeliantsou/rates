@@ -25,15 +25,16 @@ final readonly class RateController
     ) {
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function index(Request $request): Response
     {
         $date = $this->parseDate($request->query('date'));
         $daysBeforeDate = $this->parseDays($request->query('days'));
         $currencyCodes = $this->resolveCurrencyCodes($request->query('currencies'));
 
-        $dates = $this->enumerateDates($date, $daysBeforeDate);
-
-        $rates = $this->rateService->getRates($dates, $currencyCodes);
+        $rates = $this->rateService->getRatesForRange($date, $daysBeforeDate, $currencyCodes);
 
         return Response::json($this->mapRatesToArray($rates));
     }
@@ -90,17 +91,6 @@ final readonly class RateController
         }
 
         return $codes;
-    }
-
-    private function enumerateDates(DateTimeImmutable $date, int $days): array
-    {
-        $dates = [];
-
-        for ($offset = 0; $offset < $days; $offset++) {
-            $dates[] = $date->modify("-{$offset} day");
-        }
-
-        return $dates;
     }
 
     private function mapRatesToArray(RateCollection $rates): array

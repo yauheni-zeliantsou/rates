@@ -7,6 +7,7 @@ namespace App\Rate\Domain\Service;
 use App\Rate\Domain\Entity\RateCollection;
 use App\Rate\Domain\Interface\RateRepositoryInterface;
 use App\Rate\Domain\Interface\RateSourceInterface;
+use DateMalformedStringException;
 use DateTimeImmutable;
 
 final readonly class RateService
@@ -15,6 +16,15 @@ final readonly class RateService
         private RateSourceInterface $source,
         private RateRepositoryInterface $repository,
     ) {
+    }
+
+    /**
+     * @param string[] $currencyCodes
+     * @throws DateMalformedStringException
+     */
+    public function getRatesForRange(DateTimeImmutable $date, int $days, array $currencyCodes): RateCollection
+    {
+        return $this->getRates($this->enumerateDates($date, $days), $currencyCodes);
     }
 
     /**
@@ -45,5 +55,20 @@ final readonly class RateService
         $fetchedRates = $this->source->getRates($dates);
 
         $this->repository->save($fetchedRates);
+    }
+
+    /**
+     * @return DateTimeImmutable[]
+     * @throws DateMalformedStringException
+     */
+    private function enumerateDates(DateTimeImmutable $date, int $days): array
+    {
+        $dates = [];
+
+        for ($offset = 0; $offset < $days; $offset++) {
+            $dates[] = $date->modify("-{$offset} day");
+        }
+
+        return $dates;
     }
 }

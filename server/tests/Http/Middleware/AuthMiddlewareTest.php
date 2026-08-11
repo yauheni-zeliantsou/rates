@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Http\Middleware;
 
 use App\Auth\Interface\TokenRepositoryInterface;
+use App\Auth\Interface\UserRepositoryInterface;
 use App\Auth\Service\TokenService;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Request;
@@ -21,7 +22,7 @@ final class AuthMiddlewareTest extends TestCase
             ->with(hash('sha256', 'valid-token'))
             ->willReturn(42);
 
-        $middleware = new AuthMiddleware(new TokenService($tokenRepository));
+        $middleware = new AuthMiddleware($this->createTokenService($tokenRepository));
         $request = new Request('GET', '/api/rates', [], [], ['Authorization' => 'Bearer valid-token']);
 
         $response = $middleware($request, fn (Request $request): Response => Response::json(['ok' => true]));
@@ -35,7 +36,7 @@ final class AuthMiddlewareTest extends TestCase
         $tokenRepository = $this->createMock(TokenRepositoryInterface::class);
         $tokenRepository->expects($this->never())->method('findActiveUserIdByTokenHash');
 
-        $middleware = new AuthMiddleware(new TokenService($tokenRepository));
+        $middleware = new AuthMiddleware($this->createTokenService($tokenRepository));
         $request = new Request('GET', '/api/rates', []);
 
         $response = $middleware($request, function (): never {
@@ -52,7 +53,7 @@ final class AuthMiddlewareTest extends TestCase
         $tokenRepository = $this->createMock(TokenRepositoryInterface::class);
         $tokenRepository->expects($this->once())->method('findActiveUserIdByTokenHash')->willReturn(null);
 
-        $middleware = new AuthMiddleware(new TokenService($tokenRepository));
+        $middleware = new AuthMiddleware($this->createTokenService($tokenRepository));
         $request = new Request('GET', '/api/rates', [], [], ['Authorization' => 'Bearer garbage']);
 
         $response = $middleware($request, function (): never {
@@ -60,5 +61,10 @@ final class AuthMiddlewareTest extends TestCase
         });
 
         $this->assertSame(401, $response->status());
+    }
+
+    private function createTokenService(TokenRepositoryInterface $tokenRepository): TokenService
+    {
+        return new TokenService($tokenRepository, $this->createStub(UserRepositoryInterface::class), 'web-frontend');
     }
 }
