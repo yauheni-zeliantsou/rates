@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Support\Database;
 
 use PDO;
+use Throwable;
 
 final readonly class MigrationRunner
 {
@@ -83,12 +84,18 @@ final readonly class MigrationRunner
 
         $this->pdo->beginTransaction();
 
-        $this->pdo->exec($sql);
+        try {
+            $this->pdo->exec($sql);
 
-        $statement = $this->pdo->prepare('INSERT INTO ' . self::REGISTRY_TABLE . ' (version) VALUES (?)');
-        $statement->execute([$name]);
+            $statement = $this->pdo->prepare('INSERT INTO ' . self::REGISTRY_TABLE . ' (version) VALUES (?)');
+            $statement->execute([$name]);
 
-        $this->pdo->commit();
+            $this->pdo->commit();
+        } catch (Throwable $exception) {
+            $this->pdo->rollBack();
+
+            throw $exception;
+        }
     }
 
     private function buildMigrationFilePath(string $name, string $suffix): string
@@ -112,11 +119,17 @@ final readonly class MigrationRunner
 
         $this->pdo->beginTransaction();
 
-        $this->pdo->exec($sql);
+        try {
+            $this->pdo->exec($sql);
 
-        $statement = $this->pdo->prepare('DELETE FROM ' . self::REGISTRY_TABLE . ' WHERE version = ?');
-        $statement->execute([$name]);
+            $statement = $this->pdo->prepare('DELETE FROM ' . self::REGISTRY_TABLE . ' WHERE version = ?');
+            $statement->execute([$name]);
 
-        $this->pdo->commit();
+            $this->pdo->commit();
+        } catch (Throwable $exception) {
+            $this->pdo->rollBack();
+
+            throw $exception;
+        }
     }
 }

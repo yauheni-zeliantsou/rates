@@ -51,3 +51,12 @@ docker-compose.yml — Nginx, PHP, cron, PostgreSQL, Redis
 
 
 The app port is configured via the `APP_PORT` variable in `.env` (default: `8888`).
+
+## Logs
+
+Application errors and warnings are written via `error_log()`, which php-fpm forwards to the container's stdout/stderr — no extra setup needed:
+
+```bash
+docker logs --tail 100 miractal_rates_php    # web requests
+docker logs --tail 100 miractal_rates_cron   # fetch-rates cron job
+```

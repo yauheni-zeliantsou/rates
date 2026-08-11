@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace App\Http;
 
 use App\Support\Exception\UpstreamUnavailableException;
+use App\Support\Logging\ErrorLogger;
+use App\Support\Logging\LoggerInterface;
 use InvalidArgumentException;
 use Throwable;
 
 final class Router
 {
     private array $routes = [];
+
+    public function __construct(private readonly LoggerInterface $logger = new ErrorLogger())
+    {
+    }
 
     public function get(string $path, callable $handler, array $middlewares = []): void
     {
@@ -35,8 +41,20 @@ final class Router
         } catch (InvalidArgumentException $exception) {
             return Response::json(['error' => $exception->getMessage()], 400);
         } catch (UpstreamUnavailableException $exception) {
+            $this->logger->warning($exception->getMessage(), [
+                'path' => $request->path(),
+                'exception' => $exception::class,
+            ]);
+
             return Response::json(['error' => $exception->getMessage()], 503);
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            $this->logger->error($exception->getMessage(), [
+                'path' => $request->path(),
+                'exception' => $exception::class,
+                'file' => $exception->getFile() . ':' . $exception->getLine(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
+
             return Response::json(['error' => 'Internal Server Error'], 500);
         }
     }

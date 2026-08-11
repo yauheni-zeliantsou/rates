@@ -7,7 +7,9 @@ namespace App\Rate\Infrastructure\CentralBankOfRussia;
 use App\Rate\Domain\Entity\Currency;
 use App\Rate\Domain\Entity\Rate;
 use App\Rate\Domain\Entity\RateCollection;
+use App\Support\Exception\UpstreamUnavailableException;
 use DateTimeImmutable;
+use Exception;
 use SimpleXMLElement;
 
 final readonly class CbrXmlParser
@@ -18,7 +20,7 @@ final readonly class CbrXmlParser
 
     public function parse(string $xml, DateTimeImmutable $requestedDate): RateCollection
     {
-        $document = new SimpleXMLElement($this->convertToUtf8($xml));
+        $document = $this->parseXml($xml);
         $effectiveDate = $this->parseEffectiveDate($document);
 
         $rates = [];
@@ -28,6 +30,18 @@ final readonly class CbrXmlParser
         }
 
         return new RateCollection(...$rates);
+    }
+
+    private function parseXml(string $xml): SimpleXMLElement
+    {
+        try {
+            return new SimpleXMLElement($this->convertToUtf8($xml));
+        } catch (Exception $exception) {
+            throw new UpstreamUnavailableException(
+                'Failed to parse CBR response: ' . $exception->getMessage(),
+                previous: $exception,
+            );
+        }
     }
 
     private function convertToUtf8(string $xml): string
