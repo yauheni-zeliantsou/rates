@@ -73,6 +73,15 @@ export function renderResults(container, rates, currencyCodes) {
   `;
 }
 
+export function renderLoading(container) {
+    container.innerHTML = `
+    <div class="results__loading">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Loading rates…</span>
+    </div>
+  `;
+}
+
 export function renderError(container, error) {
     container.innerHTML = `<p class="rates-filter__hint" style="color: var(--color-danger, #c0392b);">${escapeHtml(error.message ?? 'Something went wrong.')}</p>`;
 }

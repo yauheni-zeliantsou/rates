@@ -123,6 +123,11 @@ select {
   background: oklch(0.12 0.01 90);
 }
 
+.rates-filter__submit:disabled {
+  background: var(--color-text-subtle);
+  cursor: not-allowed;
+}
+
 .rates-filter input {
   height: 40px;
   font-size: var(--fs-base);
